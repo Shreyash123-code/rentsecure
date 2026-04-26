@@ -1,0 +1,6 @@
+{
+  "name": "RentSecure",
+  "description": "A premium Web2.5 rental property ecosystem with Ethereum-based smart contract escrows and a high-end aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["blockchain", "realtime"]
+}
