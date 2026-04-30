@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Mail, Lock, User, Github, Eye, EyeOff, Shield } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, Shield } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -174,19 +174,7 @@ export const AuthModal = ({ isOpen, onClose, onLogin }: AuthModalProps) => {
                   )}
                 </button>
 
-                <div className="flex items-center gap-3 my-1">
-                  <div className="h-px bg-ink/10 flex-1" />
-                  <span className="text-[11px] uppercase font-bold text-ink/30">Or continue with</span>
-                  <div className="h-px bg-ink/10 flex-1" />
-                </div>
 
-                <button
-                  id="auth-github-btn"
-                  type="button"
-                  className="w-full py-3.5 bg-neutral-900 text-white border border-neutral-800 rounded-xl font-bold text-sm hover:bg-neutral-800 transition-all flex items-center justify-center gap-2"
-                >
-                  <Github className="w-4 h-4" /> Continue with GitHub
-                </button>
               </form>
             </div>
           </motion.div>

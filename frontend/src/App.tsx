@@ -82,6 +82,9 @@ const MOCK_PROPERTIES: Property[] = [
 export default function App() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [search, setSearch] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [propertyType, setPropertyType] = useState('All Types');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [currentRoute, setCurrentRoute] = useState<Route>('browse');
   const [account, setAccount] = useState<string | null>(null);
@@ -116,17 +119,23 @@ export default function App() {
     }
   };
 
-  const filteredProperties = properties.filter(
-    (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.location.toLowerCase().includes(search.toLowerCase())
-  );
+  const applyFilters = (list: Property[]) => {
+    return list.filter((p) => {
+      const rawPrice = parseFloat(p.price.replace(/,/g, ''));
+      const matchesSearch =
+        p.title.toLowerCase().includes(search.toLowerCase()) ||
+        p.location.toLowerCase().includes(search.toLowerCase());
+      const matchesMin = minPrice === '' || rawPrice >= parseFloat(minPrice);
+      const matchesMax = maxPrice === '' || rawPrice <= parseFloat(maxPrice);
+      const matchesType = propertyType === 'All Types' || (p.type ?? p.property_type) === propertyType;
+      return matchesSearch && matchesMin && matchesMax && matchesType;
+    });
+  };
 
-  const displayProperties = filteredProperties.length > 0 ? filteredProperties : MOCK_PROPERTIES.filter(
-    (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.location.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProperties = applyFilters(properties);
+  const displayProperties = filteredProperties.length > 0
+    ? filteredProperties
+    : applyFilters(MOCK_PROPERTIES);
 
   const nav = (route: Route) => (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -229,15 +238,15 @@ export default function App() {
             className="max-w-7xl mx-auto pt-28 px-6 lg:px-10"
           >
             {/* Hero */}
-            <div className="mb-12 flex flex-col gap-8">
-              <div className="flex justify-between items-end gap-6 flex-wrap">
-                <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <div className="mb-12 flex flex-col gap-8 items-center text-center">
+              <div className="flex flex-col items-center gap-4 w-full">
+                <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center">
                   <p className="text-[11px] uppercase font-bold tracking-widest text-accent mb-3">Blockchain-Verified • Escrow-Protected</p>
                   <h1 className="serif text-5xl lg:text-6xl leading-tight font-bold">
                     Exceptional living,<br />secured on-chain.
                   </h1>
                 </motion.div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-2">
                   <button
                     id="view-grid"
                     onClick={() => setViewMode('grid')}
@@ -273,14 +282,37 @@ export default function App() {
                     onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
-                <div className="hidden sm:block flex-1 px-6 py-4 border-r border-ink/8">
-                  <p className="text-[10px] uppercase font-bold text-ink/40 mb-0.5 tracking-widest">Price Range</p>
-                  <p className="text-sm font-medium">₹50,000 – ₹5,00,000 / mo</p>
+                <div className="hidden sm:flex flex-1 px-6 py-4 border-r border-ink/8 gap-2 items-center">
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase font-bold text-ink/40 mb-0.5 tracking-widest">Min Price</p>
+                    <input
+                      id="min-price-input"
+                      type="number"
+                      placeholder="e.g. 10000"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="w-full text-sm bg-transparent outline-none font-medium placeholder:text-ink/30"
+                    />
+                  </div>
+                  <span className="text-ink/20 font-bold mt-3">–</span>
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase font-bold text-ink/40 mb-0.5 tracking-widest">Max Price</p>
+                    <input
+                      id="max-price-input"
+                      type="number"
+                      placeholder="e.g. 100000"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="w-full text-sm bg-transparent outline-none font-medium placeholder:text-ink/30"
+                    />
+                  </div>
                 </div>
                 <div className="hidden lg:block flex-1 px-6 py-4">
                   <p className="text-[10px] uppercase font-bold text-ink/40 mb-0.5 tracking-widest">Type</p>
                   <select
                     id="property-type-select"
+                    value={propertyType}
+                    onChange={(e) => setPropertyType(e.target.value)}
                     className="w-full text-sm bg-transparent outline-none appearance-none cursor-pointer font-medium"
                   >
                     <option>All Types</option>
@@ -300,7 +332,7 @@ export default function App() {
             {/* Stats Bar */}
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-              className="flex gap-6 mb-10 text-[11px] font-bold uppercase tracking-widest text-ink/40"
+              className="flex gap-6 mb-10 text-[11px] font-bold uppercase tracking-widest text-ink/40 justify-center"
             >
               <span>{displayProperties.length} Properties</span>
               <span className="text-ink/15">|</span>
@@ -309,12 +341,28 @@ export default function App() {
               <span>Avg. Trust Score: 98</span>
             </motion.div>
 
-            {/* Grid */}
-            <div className="masonry-grid">
-              {displayProperties.map((p, i) => (
-                <PropertyCard key={p.id} property={p} index={i} />
-              ))}
-            </div>
+            {/* Grid / Map */}
+            {viewMode === 'map' ? (
+              <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center">
+                  <MapIcon className="w-8 h-8 text-accent" />
+                </div>
+                <h3 className="serif text-2xl font-bold">Map View</h3>
+                <p className="text-sm text-ink/40 max-w-sm">Interactive map integration coming soon. Switch back to grid to browse listings.</p>
+                <button onClick={() => setViewMode('grid')} className="btn-premium py-2.5 px-6 text-sm mt-2">Back to Grid</button>
+              </div>
+            ) : (
+              <div className="masonry-grid">
+                {displayProperties.length > 0 ? displayProperties.map((p, i) => (
+                  <PropertyCard key={p.id} property={p} index={i} />
+                )) : (
+                  <div className="col-span-full text-center py-20">
+                    <p className="text-ink/40 font-medium">No properties match your filters.</p>
+                    <button onClick={() => { setSearch(''); setMinPrice(''); setMaxPrice(''); setPropertyType('All Types'); }} className="mt-4 text-sm text-accent font-semibold hover:underline">Clear all filters</button>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.main>
         )}
 

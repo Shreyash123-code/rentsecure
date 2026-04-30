@@ -1,20 +1,33 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# RentSecure
 
-# Run and deploy your AI Studio app
+A blockchain-verified rental platform with smart contract escrow protection for tenants and landlords.
 
-This contains everything you need to run your app locally.
+## Tech Stack
 
-View your app in AI Studio: https://ai.studio/apps/e9a786a0-d0f7-4b83-8a26-2e31cd5967dd
+- **Frontend**: React 19, Vite, TypeScript, Tailwind CSS
+- **Backend**: Django, Django REST Framework
+- **Blockchain**: Solidity (Ethereum), Ethers.js
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js, Python 3.x
 
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Backend
+```bash
+cd backend
+python -m venv venv
+.\venv\Scripts\activate
+python -m pip install django djangorestframework django-cors-headers
+python manage.py migrate
+python seed.py
+python manage.py runserver
+```
+
+The frontend runs at `http://localhost:5173` and the backend API at `http://localhost:8000/api/`.

@@ -31,7 +31,7 @@ def seed():
             location='Bel Air, CA',
             price='6,200',
             verified=False,
-            image='https://images.unsplash.com/photo-1600607687940-c52fb0479997?auto=format&fit=crop&q=80',
+            image='https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800',
             social_proof='12 people viewed this today',
             property_type='Villa'
         )
