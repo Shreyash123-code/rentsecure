@@ -1,12 +1,11 @@
 # RentSecure
 
-A blockchain-verified rental platform with smart contract escrow protection for tenants and landlords.
+A rental platform with smart contract escrow protection for tenants and landlords.
 
 ## Tech Stack
 
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS
 - **Backend**: Django, Django REST Framework
-- **Blockchain**: Solidity (Ethereum), Ethers.js
 
 ## Run Locally
 
